@@ -1,0 +1,1 @@
+tree -a -I ".github|.pytest_cache|test_resources|venv"
