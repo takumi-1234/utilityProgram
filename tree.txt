@@ -1,1 +1,1 @@
-tree -a -I ".github|.pytest_cache|test_resources|venv"
+tree -a -I ".github|.pytest_cache|__pycache__|venv|objects"
