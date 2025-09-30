@@ -49,10 +49,19 @@ func main() {
 			return err
 		}
 
-		fmt.Fprintf(out, "```%s \n# %s\n\n", lang, path)
-		out.Write(content)
-		fmt.Fprintln(out, "```")
-		fmt.Fprintln(out, "---")
+		// エラーをすべてチェック
+		if _, err := fmt.Fprintf(out, "```%s \n# %s\n\n", lang, path); err != nil {
+			return err
+		}
+		if _, err := out.Write(content); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(out, "```"); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintln(out, "---"); err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -85,7 +94,7 @@ func shouldIgnorePath(path string) bool {
 	lower := strings.ToLower(path)
 	return strings.Contains(lower, "min.js") ||
 		strings.Contains(lower, ".lock") ||
-		strings.Contains(lower, ".DS_Store")
+		strings.Contains(lower, ".ds_store")
 }
 
 func detectLanguage(path string) string {
@@ -107,11 +116,11 @@ func detectLanguage(path string) string {
 		return "text"
 	case ".sh":
 		return "bash"
-	case ".Dockerfile", "dockerfile":
+	case ".dockerfile":
 		return "Dockerfile"
 	case ".gitignore":
 		return ""
-	case ".makefile", "makefile":
+	case ".makefile":
 		return "makefile"
 	case ".html":
 		return "html"
@@ -126,6 +135,14 @@ func detectLanguage(path string) string {
 	case ".sql":
 		return "sql"
 	default:
+		// ファイル名が Dockerfile や Makefile のように拡張子なしで特定できるものに対応
+		base := strings.ToLower(filepath.Base(path))
+		if base == "dockerfile" {
+			return "Dockerfile"
+		}
+		if base == "makefile" {
+			return "makefile"
+		}
 		return ""
 	}
 }
